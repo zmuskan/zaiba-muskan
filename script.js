@@ -432,3 +432,112 @@ document.addEventListener("DOMContentLoaded", () => {
 
   console.log("Zaiba Muskan's portfolio initialized.");
 });
+
+/* =========================================
+   FLOATING BLOSSOMS — HERO INTERACTION
+   ========================================= */
+
+(() => {
+  const hero = document.querySelector("#home");
+  const container = document.querySelector("#hero-blossoms");
+
+  if (!hero || !container) return;
+
+  const reducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  ).matches;
+
+  const symbols = ["✿", "❀", "✽", "✿"];
+  const count = window.innerWidth < 600 ? 18 : 32;
+  const blossoms = [];
+  const pointer = { x: 0, y: 0, active: false };
+
+  for (let i = 0; i < count; i++) {
+    const el = document.createElement("span");
+    el.className = "blossom-particle";
+    el.textContent = symbols[i % symbols.length];
+
+    const size = 9 + Math.random() * 11;
+
+    const blossom = {
+      el,
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      size,
+      speed: 0.12 + Math.random() * 0.3,
+      sway: Math.random() * Math.PI * 2,
+      swaySpeed: 0.006 + Math.random() * 0.012,
+      drift: 0.15 + Math.random() * 0.45,
+      depth: 0.3 + Math.random() * 0.7,
+      rotation: Math.random() * 360
+    };
+
+    el.style.fontSize = `${size}px`;
+    el.style.opacity = `${0.22 + Math.random() * 0.48}`;
+    container.appendChild(el);
+    blossoms.push(blossom);
+  }
+
+  hero.addEventListener("pointermove", (event) => {
+    const rect = hero.getBoundingClientRect();
+    pointer.x = event.clientX - rect.left;
+    pointer.y = event.clientY - rect.top;
+    pointer.active = true;
+  });
+
+  hero.addEventListener("pointerleave", () => {
+    pointer.active = false;
+  });
+
+  let animationFrame;
+
+  function animate() {
+    const width = hero.clientWidth;
+    const height = hero.clientHeight;
+
+    for (const b of blossoms) {
+      b.sway += b.swaySpeed;
+
+      if (!reducedMotion) {
+        b.y -= b.speed;
+        b.x += Math.sin(b.sway) * b.drift;
+
+        if (pointer.active) {
+          const dx = b.x - pointer.x;
+          const dy = b.y - pointer.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          const radius = 130;
+
+          if (distance < radius && distance > 0) {
+            const force = ((radius - distance) / radius) * 1.5;
+            b.x += (dx / distance) * force;
+            b.y += (dy / distance) * force;
+          }
+        }
+
+        if (b.y < -30) {
+          b.y = height + 20;
+          b.x = Math.random() * width;
+        }
+
+        if (b.x < -25) b.x = width + 20;
+        if (b.x > width + 25) b.x = -20;
+      }
+
+      b.el.style.transform =
+        `translate3d(${b.x}px, ${b.y}px, 0) rotate(${b.rotation + b.sway * 12}deg)`;
+
+      b.el.style.opacity = `${0.2 + b.depth * 0.5}`;
+    }
+
+    if (!reducedMotion) {
+      animationFrame = requestAnimationFrame(animate);
+    }
+  }
+
+  animate();
+
+  window.addEventListener("pagehide", () => {
+    if (animationFrame) cancelAnimationFrame(animationFrame);
+  });
+})();

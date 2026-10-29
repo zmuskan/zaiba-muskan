@@ -1598,3 +1598,329 @@ footer {
     transition-duration: .01ms !important;
   }
 }
+
+/* =========================================
+   ZAIBA MUSKAN — BLOSSOM HERO
+   ========================================= */
+
+:root {
+  --blossom-pink: #f49ac2;
+  --blossom-light: #ffd6e8;
+  --blossom-lilac: #c9a7ff;
+}
+
+#particle-canvas,
+.floating-shapes {
+  display: none !important;
+}
+
+.hero {
+  position: relative;
+  isolation: isolate;
+  min-height: 100svh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 110px 24px 80px;
+  background:
+    radial-gradient(ellipse at 50% 30%, rgba(108, 49, 81, 0.18), transparent 42%),
+    radial-gradient(ellipse at 12% 90%, rgba(244, 154, 194, 0.07), transparent 35%),
+    #0b090d;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(125deg, transparent 30%, rgba(201, 167, 255, 0.025), transparent 70%);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  width: min(100%, 1050px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0;
+}
+
+.hero-kicker {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  color: #d0bdca;
+  font-size: 11px;
+  letter-spacing: 2px;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #f49ac2;
+  box-shadow: 0 0 12px rgba(244, 154, 194, 0.8);
+}
+
+.kicker-divider {
+  color: #f49ac2;
+}
+
+.name-background {
+  position: absolute;
+  z-index: -1;
+  top: 37%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  overflow: hidden;
+  color: rgba(255, 226, 240, 0.045);
+  font-size: clamp(75px, 17vw, 210px);
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: 0.035em;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+}
+
+.hero-portrait {
+  position: relative;
+  z-index: 1;
+  width: min(320px, 68vw);
+  height: clamp(230px, 36vh, 350px);
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  margin: 4px 0 -8px;
+  pointer-events: none;
+}
+
+.hero-portrait::after {
+  content: "";
+  position: absolute;
+  inset: 45% 0 0;
+  background: linear-gradient(to bottom, transparent, #0b090d 100%);
+  opacity: 0.55;
+}
+
+.hero-portrait img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  filter: drop-shadow(0 0 30px rgba(244, 154, 194, 0.12));
+}
+
+.hero-text {
+  position: relative;
+  z-index: 3;
+  width: min(100%, 760px);
+}
+
+.hero-text .eyebrow {
+  color: var(--blossom-pink);
+  letter-spacing: 3px;
+  font-size: 11px;
+  margin: 10px 0 12px;
+}
+
+.hero-text h1 {
+  margin: 0;
+  font-size: clamp(38px, 6.5vw, 76px);
+  line-height: 1.08;
+  letter-spacing: -2px;
+  font-weight: 800;
+  color: #fff5fa;
+}
+
+.hero-text .accent-dot {
+  color: var(--blossom-pink);
+}
+
+.hero-description {
+  max-width: 620px;
+  margin: 18px auto 26px;
+  color: #b8aab5;
+  font-size: clamp(14px, 1.6vw, 17px);
+  line-height: 1.8;
+}
+
+.hero-description span {
+  color: #f3c2da;
+}
+
+.hero-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+.hero-buttons a {
+  min-height: 48px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 9px;
+  padding: 13px 22px;
+  border: 1px solid rgba(244, 154, 194, 0.3);
+  border-radius: 6px;
+  color: #fff1f7;
+  text-decoration: none;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.hero-buttons a:hover {
+  transform: translateY(-3px);
+  border-color: var(--blossom-pink);
+  background: rgba(244, 154, 194, 0.09);
+  box-shadow: 0 8px 30px rgba(244, 154, 194, 0.09);
+}
+
+.hero-buttons .btn-primary {
+  background: rgba(244, 154, 194, 0.12);
+  border-color: var(--blossom-pink);
+  color: #ffd6e8;
+}
+
+.hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px 24px;
+  margin-top: 24px;
+  color: #a99ba6;
+  font-size: 12px;
+}
+
+.hero-meta i {
+  color: var(--blossom-pink);
+  margin-right: 5px;
+}
+
+.scroll-cue {
+  position: absolute;
+  z-index: 4;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  color: #bda9b8;
+  text-decoration: none;
+  font-size: 9px;
+  letter-spacing: 2px;
+}
+
+.scroll-cue i {
+  color: var(--blossom-pink);
+  animation: blossom-scroll 1.7s ease-in-out infinite;
+}
+
+@keyframes blossom-scroll {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(5px); }
+}
+
+/* Floating mini blossoms */
+
+.hero-blossoms {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.blossom-particle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: var(--blossom-pink);
+  line-height: 1;
+  opacity: 0;
+  will-change: transform;
+  text-shadow: 0 0 12px rgba(244, 154, 194, 0.25);
+  user-select: none;
+  transition: color 250ms ease;
+}
+
+.blossom-particle:nth-child(3n) {
+  color: var(--blossom-light);
+}
+
+.blossom-particle:nth-child(4n) {
+  color: var(--blossom-lilac);
+}
+
+@media (max-width: 600px) {
+  .hero {
+    min-height: 100svh;
+    padding: 100px 18px 76px;
+  }
+
+  .hero-kicker {
+    font-size: 9px;
+    letter-spacing: 1.2px;
+    gap: 7px;
+  }
+
+  .hero-portrait {
+    width: min(260px, 75vw);
+    height: clamp(200px, 30vh, 280px);
+  }
+
+  .name-background {
+    top: 34%;
+    font-size: 18vw;
+  }
+
+  .hero-text h1 {
+    letter-spacing: -1.3px;
+  }
+
+  .hero-description {
+    line-height: 1.65;
+    margin: 14px auto 20px;
+  }
+
+  .hero-buttons {
+    gap: 9px;
+  }
+
+  .hero-buttons a {
+    padding: 12px 14px;
+    font-size: 13px;
+  }
+
+  .hero-meta {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-cue i {
+    animation: none;
+  }
+
+  .blossom-particle {
+    transition: none;
+  }
+}

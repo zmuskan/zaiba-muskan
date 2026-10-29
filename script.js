@@ -1,435 +1,434 @@
-// Theme Toggle Logic
-const themeToggle = document.getElementById('theme-toggle');
-const htmlElement = document.documentElement;
-const icon = themeToggle.querySelector('i');
+/* =========================================================
+   ZAIBA MUSKAN — PORTFOLIO INTERACTIONS
+   Theme · mobile navigation · project tabs · particles
+   ========================================================= */
 
-// Check for saved user preference, if any, on load of the website
-const currentTheme = localStorage.getItem('theme') || 'dark';
-htmlElement.setAttribute('data-theme', currentTheme);
-updateIcon(currentTheme);
+document.addEventListener("DOMContentLoaded", () => {
+  const html = document.documentElement;
 
-themeToggle.addEventListener('click', () => {
-    let targetTheme = 'light';
-    if (htmlElement.getAttribute('data-theme') === 'light') {
-        targetTheme = 'dark';
+  // THEME TOGGLE
+  const themeToggle = document.getElementById("theme-toggle");
+  const themeIcon = themeToggle?.querySelector("i");
+
+  let savedTheme = "dark";
+
+  try {
+    savedTheme = localStorage.getItem("theme") || "dark";
+  } catch (_) {}
+
+  function setTheme(theme) {
+    const selectedTheme = theme === "light" ? "light" : "dark";
+
+    html.setAttribute("data-theme", selectedTheme);
+
+    try {
+      localStorage.setItem("theme", selectedTheme);
+    } catch (_) {}
+
+    if (themeIcon) {
+      themeIcon.classList.toggle("fa-sun", selectedTheme === "dark");
+      themeIcon.classList.toggle("fa-moon", selectedTheme === "light");
     }
 
-    htmlElement.setAttribute('data-theme', targetTheme);
-    localStorage.setItem('theme', targetTheme);
-    updateIcon(targetTheme);
-});
+    if (themeToggle) {
+      themeToggle.setAttribute(
+        "aria-label",
+        selectedTheme === "dark" ? "Switch to light theme" : "Switch to dark theme"
+      );
+    }
+  }
 
-function updateIcon(theme) {
-    if (theme === 'dark') {
-        icon.classList.remove('fa-moon');
-        icon.classList.add('fa-sun');
+  setTheme(savedTheme);
+
+  themeToggle?.addEventListener("click", () => {
+    setTheme(html.getAttribute("data-theme") === "light" ? "dark" : "light");
+  });
+
+  // MOBILE NAVIGATION
+  const menuToggle = document.getElementById("mobile-menu-toggle");
+  const navLinks = document.querySelector(".nav-links");
+
+  function closeMobileMenu() {
+    if (!menuToggle || !navLinks) return;
+
+    navLinks.classList.remove("open");
+    menuToggle.setAttribute("aria-expanded", "false");
+
+    const icon = menuToggle.querySelector("i");
+
+    if (icon) {
+      icon.classList.remove("fa-xmark", "fa-times");
+      icon.classList.add("fa-bars");
+    }
+  }
+
+  if (menuToggle && navLinks) {
+    menuToggle.addEventListener("click", () => {
+      const isOpen = navLinks.classList.toggle("open");
+
+      menuToggle.setAttribute("aria-expanded", String(isOpen));
+
+      const icon = menuToggle.querySelector("i");
+
+      if (icon) {
+        icon.classList.toggle("fa-bars", !isOpen);
+        icon.classList.toggle("fa-xmark", isOpen);
+        icon.classList.remove("fa-times");
+      }
+    });
+
+    navLinks.querySelectorAll('a[href^="#"]').forEach(link => {
+      link.addEventListener("click", closeMobileMenu);
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") closeMobileMenu();
+    });
+
+    window.addEventListener("resize", () => {
+      if (window.innerWidth > 760) closeMobileMenu();
+    });
+  }
+
+  // SMOOTH SCROLLING
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener("click", event => {
+      const href = anchor.getAttribute("href");
+
+      if (!href || href === "#") return;
+
+      let target;
+
+      try {
+        target = document.querySelector(href);
+      } catch (_) {
+        return;
+      }
+
+      if (!target) return;
+
+      event.preventDefault();
+
+      target.scrollIntoView({
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          ? "auto"
+          : "smooth",
+        block: "start"
+      });
+    });
+  });
+
+  // PROJECT CATEGORY TABS
+  window.showProjectCategory = function(category, event) {
+    const target = document.getElementById(category + "-projects");
+    const section = document.getElementById("projects");
+
+    if (!target || !section) return;
+
+    section.querySelectorAll(".project-category").forEach(panel => {
+      panel.classList.remove("active");
+    });
+
+    section.querySelectorAll(".project-tab").forEach(tab => {
+      tab.classList.remove("active");
+    });
+
+    target.classList.add("active");
+
+    if (event?.currentTarget) {
+      event.currentTarget.classList.add("active");
+    }
+
+    const subtabs = section.querySelector(".project-subtabs");
+
+    if (subtabs) {
+      subtabs.style.display = category === "software" ? "flex" : "none";
+    }
+
+    if (category === "software") {
+      const activeGrid = section.querySelector(".software-sub-grid.active");
+
+      if (!activeGrid) {
+        window.showSoftwareSubCategory("ml");
+      }
     } else {
-        icon.classList.remove('fa-sun');
-        icon.classList.add('fa-moon');
+      section.querySelectorAll(".software-sub-grid").forEach(grid => {
+        grid.classList.remove("active");
+      });
     }
-}
+  };
 
-// Smooth Scrolling
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            target.scrollIntoView({ behavior: 'smooth' });
-        }
-    });
-});
-
-// Project Tab Switching
-function showProjectCategory(category, event) {
-    // Show selected category
-    const categoryElement = document.getElementById(category + '-projects');
-    if (categoryElement) {
-        // Hide only project categories
-        document.querySelectorAll('#projects .project-category').forEach(cat => {
-            cat.classList.remove('active');
-        });
-
-        // Remove active class from only project tabs
-        document.querySelectorAll('#projects .project-tab').forEach(tab => {
-            tab.classList.remove('active');
-        });
-
-        categoryElement.classList.add('active');
-    }
-
-    // Add active class to clicked tab
-    if (event && event.currentTarget) {
-        event.currentTarget.classList.add('active');
-    }
-
-    // Special logic for Software sub-tabs
-    const softwareSubTabs = document.querySelector('.project-subtabs');
-    if (softwareSubTabs) {
-        if (category === 'software') {
-            softwareSubTabs.style.display = 'flex';
-            // Default to 'ml' if no software sub-grid is active
-            const activeSubGrid = document.querySelector('.software-sub-grid.active');
-            if (!activeSubGrid) {
-                showSoftwareSubCategory('ml');
-            }
-        } else {
-            softwareSubTabs.style.display = 'none';
-            // Hide all sub-grids when leaving Software to ensure clean state
-            document.querySelectorAll('.software-sub-grid').forEach(grid => {
-                grid.classList.remove('active');
-            });
-        }
-    }
-}
-
-// Software Sub-category Switching
-function showSoftwareSubCategory(subCategory, event) {
-    // Hide all sub-grids
-    document.querySelectorAll('.software-sub-grid').forEach(grid => {
-        grid.classList.remove('active');
+  // SOFTWARE SUBCATEGORY TABS
+  window.showSoftwareSubCategory = function(subCategory, event) {
+    document.querySelectorAll(".software-sub-grid").forEach(grid => {
+      grid.classList.remove("active");
     });
 
-    // Remove active class from all subtabs
-    document.querySelectorAll('.subtab').forEach(tab => {
-        tab.classList.remove('active');
+    document.querySelectorAll(".subtab").forEach(tab => {
+      tab.classList.remove("active");
     });
 
-    // Show selected sub-grid
-    const targetGrid = document.getElementById(subCategory + '-software');
-    if (targetGrid) {
-        targetGrid.classList.add('active');
+    const target = document.getElementById(subCategory + "-software");
+
+    if (target) target.classList.add("active");
+
+    let selectedTab = event?.currentTarget;
+
+    if (!selectedTab) {
+      selectedTab = Array.from(document.querySelectorAll(".subtab")).find(tab =>
+        (tab.getAttribute("onclick") || "").includes(subCategory)
+      );
     }
 
-    // Add active class to clicked subtab if it exists (for manual clicks)
-    if (event && event.currentTarget) {
-        event.currentTarget.classList.add('active');
-    } else if (window.event && window.event.currentTarget) {
-        window.event.currentTarget.classList.add('active');
-    } else {
-        // Find the tab matching the category for programmatic calls
-        const tabs = document.querySelectorAll('.subtab');
-        tabs.forEach(tab => {
-            if (tab.getAttribute('onclick').includes(subCategory)) {
-                tab.classList.add('active');
-            }
-        });
-    }
-}
+    if (selectedTab) selectedTab.classList.add("active");
+  };
 
-// Carousel Movement Logic
-const carouselPositions = {}; // Keep track of each carousel index separately
+  // PROJECT CAROUSELS
+  const carouselPositions = {};
 
-function moveCarousel(trackId, direction) {
-    const track = document.getElementById('track-' + trackId);
+  window.moveCarousel = function(trackId, direction) {
+    const track = document.getElementById("track-" + trackId);
+
     if (!track) return;
 
-    const cards = track.querySelectorAll('.project-card');
-    const totalCards = cards.length;
-    if (totalCards <= 1) return; // No need to move if 1 or 0 cards
+    const cards = track.querySelectorAll(".project-card");
 
-    // Initialize position if not exists
-    if (carouselPositions[trackId] === undefined) {
-        carouselPositions[trackId] = 0;
-    }
+    if (cards.length < 2) return;
 
-    // Update index
-    carouselPositions[trackId] = (carouselPositions[trackId] + direction + totalCards) % totalCards;
+    const style = window.getComputedStyle(track);
+    const gap = parseFloat(style.columnGap || style.gap) || 0;
+    const step = cards[0].getBoundingClientRect().width + gap;
 
-    // Apply transform
-    const cardWidth = cards[0].offsetWidth + 30; // 30 is the gap
-    track.style.transform = `translateX(-${carouselPositions[trackId] * cardWidth}px)`;
-}
+    const wrapper = track.parentElement;
 
-// Toggle Show More/Less for project descriptions
-function toggleDescription(button) {
-    const description = button.closest('.project-description');
-    const fullDesc = description.querySelector('.full-desc');
+    if (!wrapper) return;
 
-    if (fullDesc.style.display === 'none' || fullDesc.style.display === '') {
-        fullDesc.style.display = 'inline';
-        button.textContent = 'Show Less';
-    } else {
-        fullDesc.style.display = 'none';
-        button.textContent = 'Show More';
-    }
-}
+    const maxOffset = Math.max(
+      0,
+      track.scrollWidth - wrapper.clientWidth
+    );
 
-function showPublicationCategory(category, event) {
-    // Show selected category
-    const categoryElement = document.getElementById(category + '-publications');
-    if (categoryElement) {
-        // Hide only publication categories
-        document.querySelectorAll('#publications .project-category').forEach(cat => {
-            cat.classList.remove('active');
-        });
+    const maxIndex = Math.max(0, cards.length - 1);
 
-        // Remove active class from only publication tabs
-        document.querySelectorAll('#publications .project-tab').forEach(tab => {
-            tab.classList.remove('active');
-        });
+    carouselPositions[trackId] = Math.max(
+      0,
+      Math.min(
+        (carouselPositions[trackId] || 0) + direction,
+        maxIndex
+      )
+    );
 
-        categoryElement.classList.add('active');
-        
-        // Add active class to clicked tab
-        if (event && event.currentTarget) {
-            event.currentTarget.classList.add('active');
-        }
-    }
-}
+    const offset = Math.min(
+      carouselPositions[trackId] * step,
+      maxOffset
+    );
 
-// Contact Carousel Logic
-const contactData = [
-    { icon: 'fa-envelope', link: 'mailto:chamanmaimona@gmail.com', tooltip: 'Email Me' },
-    { icon: 'fa-linkedin', link: 'https://www.linkedin.com/in/ummaymaimonachaman', tooltip: 'LinkedIn' },
-    { icon: 'fa-github', link: 'https://github.com/UmmayMaimonaChaman', tooltip: 'GitHub' },
-    { icon: 'fa-hackerrank', link: 'https://www.hackerrank.com/profile/chamanmaimona', tooltip: 'HackerRank' },
-    { icon: 'fa-facebook', link: 'https://www.facebook.com/share/14TB8utCnvY/', tooltip: 'Facebook' },
-    { icon: 'fa-instagram', link: 'https://www.instagram.com/chaman_maimona/', tooltip: 'Instagram' },
-    { icon: 'fa-phone', link: 'tel:+8801715003815', tooltip: 'Call Me' },
-    { icon: 'fa-map-marker-alt', link: 'https://www.google.com/maps/search/?api=1&query=Mirpur,+Dhaka-1216,+Bangladesh', tooltip: 'Mirpur, Dhaka-1216' }
-];
+    track.style.transform = `translateX(-${offset}px)`;
+  };
 
-const carouselTrack = document.getElementById('contact-carousel');
-const prevBtn = document.getElementById('carousel-prev');
-const nextBtn = document.getElementById('carousel-next');
-let carouselIndex = 0;
+  // SHOW MORE / LESS
+  window.toggleDescription = function(button) {
+    if (!button) return;
 
-if (carouselTrack) {
-    // Initialize Carousel
-    contactData.forEach((item, index) => {
-        const el = document.createElement('a');
-        el.className = 'carousel-item';
-        el.href = item.link;
-        el.target = item.link.startsWith('http') ? '_blank' : '_self';
-        
-        // Icon prefix logic
-        let prefix = 'fab';
-        if (['fa-envelope', 'fa-phone', 'fa-map-marker-alt'].includes(item.icon)) {
-            prefix = 'fas';
-        }
-        el.innerHTML = `<i class="${prefix} ${item.icon}"></i>`;
+    const description = button.closest(".project-description");
 
-        el.setAttribute('data-tooltip', item.tooltip);
-        // Add click event to rotate to this item if not active
-        el.addEventListener('click', (e) => {
-            if (carouselIndex !== index) {
-                e.preventDefault(); // Don't navigate, just rotate
-                carouselIndex = index;
-                updateCarousel();
-            }
-        });
-        carouselTrack.appendChild(el);
+    if (!description) return;
+
+    const fullDescription = description.querySelector(".full-desc");
+
+    if (!fullDescription) return;
+
+    const isHidden =
+      window.getComputedStyle(fullDescription).display === "none";
+
+    fullDescription.style.display = isHidden ? "inline" : "none";
+    button.textContent = isHidden ? "Show Less" : "Show More";
+    button.setAttribute("aria-expanded", String(isHidden));
+  };
+
+  // PUBLICATION TABS
+  window.showPublicationCategory = function(category, event) {
+    const section = document.getElementById("publications");
+    const target = document.getElementById(category + "-publications");
+
+    if (!section || !target) return;
+
+    section.querySelectorAll(".project-category").forEach(panel => {
+      panel.classList.remove("active");
     });
 
-    const items = document.querySelectorAll('.carousel-item');
+    section.querySelectorAll(".project-tab").forEach(tab => {
+      tab.classList.remove("active");
+    });
 
-    function updateCarousel() {
-        items.forEach((item, i) => {
-            let offset = i - carouselIndex;
+    target.classList.add("active");
 
-            // Normalize offset to be within -Total/2 to +Total/2
-            if (offset > items.length / 2) offset -= items.length;
-            if (offset < -items.length / 2) offset += items.length;
+    if (event?.currentTarget) {
+      event.currentTarget.classList.add("active");
+    }
+  };
 
-            if (offset === 0) {
-                // Active Center
-                item.style.opacity = '1';
-                item.style.transform = 'translateX(0) scale(1.5)';
-                item.style.zIndex = '10';
-                item.style.boxShadow = '0 0 20px var(--accent-color)';
-                item.classList.add('active');
-            } else {
-                item.classList.remove('active');
-                const spacing = 90;
-                const translateX = offset * spacing;
-                const scale = Math.max(0.5, 1 - Math.abs(offset) * 0.2);
-                const opacity = Math.max(0.2, 1 - Math.abs(offset) * 0.3);
-                const zIndex = 10 - Math.abs(offset);
+  // SUBTLE SCROLL REVEALS
+  const revealTargets = document.querySelectorAll(
+    ".section .project-card, " +
+    ".section .skill-category, " +
+    ".section .experience-card, " +
+    ".section .community-card, " +
+    ".section .education-mini"
+  );
 
-                item.style.transform = `translateX(${translateX}px) scale(${scale})`;
-                item.style.opacity = `${opacity}`;
-                item.style.zIndex = `${zIndex}`;
-                item.style.boxShadow = '0 5px 15px rgba(0,0,0,0.2)';
-            }
-        });
+  if (
+    "IntersectionObserver" in window &&
+    !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  ) {
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+
+        entry.target.classList.add("is-visible");
+        observer.unobserve(entry.target);
+      });
+    }, {
+      threshold: 0.12
+    });
+
+    revealTargets.forEach(element => {
+      element.classList.add("reveal-on-scroll");
+      observer.observe(element);
+    });
+  }
+
+  // ROSE AND LILAC PARTICLE BACKGROUND
+  (function initParticles() {
+    const canvas = document.getElementById("particle-canvas");
+
+    if (
+      !canvas ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      return;
     }
 
-    if (prevBtn) {
-        prevBtn.addEventListener('click', () => {
-            carouselIndex = (carouselIndex - 1 + items.length) % items.length;
-            updateCarousel();
-        });
+    const ctx = canvas.getContext("2d");
+
+    if (!ctx) return;
+
+    let width = 0;
+    let height = 0;
+    let animationFrame = 0;
+    let particles = [];
+    let resizeTimeout;
+
+    const colors = [
+      "243, 168, 200",
+      "201, 184, 255",
+      "255, 220, 236"
+    ];
+
+    const isMobile = () => window.innerWidth < 700;
+
+    function resizeCanvas() {
+      const ratio = Math.min(window.devicePixelRatio || 1, 2);
+
+      width = window.innerWidth;
+      height = window.innerHeight;
+
+      canvas.width = Math.floor(width * ratio);
+      canvas.height = Math.floor(height * ratio);
+      canvas.style.width = width + "px";
+      canvas.style.height = height + "px";
+
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+
+      const count = isMobile() ? 24 : 54;
+
+      particles = Array.from({ length: count }, () => ({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 0.22,
+        vy: (Math.random() - 0.5) * 0.22,
+        radius: Math.random() * 1.5 + 0.5,
+        alpha: Math.random() * 0.28 + 0.08,
+        color: colors[Math.floor(Math.random() * colors.length)]
+      }));
     }
 
-    if (nextBtn) {
-        nextBtn.addEventListener('click', () => {
-            carouselIndex = (carouselIndex + 1) % items.length;
-            updateCarousel();
-        });
-    }
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
 
-    // Initial call
-    updateCarousel();
-}
+      for (let i = 0; i < particles.length; i++) {
+        const particle = particles[i];
 
-console.log("Welcome to CHAMAN's Portfolio!");
+        particle.x += particle.vx;
+        particle.y += particle.vy;
 
-// Particle Background Logic
-(function () {
-    const canvas = document.getElementById('particle-canvas');
-    if (!canvas) return;
+        if (particle.x < -10) particle.x = width + 10;
+        if (particle.x > width + 10) particle.x = -10;
+        if (particle.y < -10) particle.y = height + 10;
+        if (particle.y > height + 10) particle.y = -10;
 
-    const ctx = canvas.getContext('2d');
-    let animationFrameId;
+        ctx.beginPath();
+        ctx.arc(
+          particle.x,
+          particle.y,
+          particle.radius,
+          0,
+          Math.PI * 2
+        );
 
-    // State
-    const mouse = { x: 0, y: 0 };
-    const attachedParticles = new Set();
-    const particles = [];
+        ctx.fillStyle =
+          `rgba(${particle.color}, ${particle.alpha})`;
 
-    // Set canvas size
-    const resizeCanvas = () => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    };
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
+        ctx.fill();
 
-    // Particle class
-    class Particle {
-        constructor() {
-            this.x = Math.random() * canvas.width;
-            this.y = Math.random() * canvas.height;
-            this.vx = (Math.random() - 0.5) * 0.2;
-            this.vy = (Math.random() - 0.5) * 0.2;
-            this.radius = Math.random() * 2 + 1;
-            this.color = 'rgba(255, 255, 255, 0.2)';
-            this.attached = false;
-            this.offsetX = 0;
-            this.offsetY = 0;
-        }
+        for (let j = i + 1; j < particles.length; j++) {
+          const other = particles[j];
+          const dx = particle.x - other.x;
+          const dy = particle.y - other.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          const maxDistance = isMobile() ? 75 : 105;
 
-        update() {
-            if (!this.attached) {
-                // Normal movement
-                this.x += this.vx;
-                this.y += this.vy;
-
-                // Bounce off edges
-                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
-                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
-
-                // Magnetic effect
-                if (mouse.x !== 0 && mouse.y !== 0) {
-                    const dx = mouse.x - this.x;
-                    const dy = mouse.y - this.y;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
-                    const magnetRadius = 150;
-
-                    if (distance < magnetRadius) {
-                        const force = (magnetRadius - distance) / magnetRadius;
-                        this.x += dx * force * 0.03;
-                        this.y += dy * force * 0.03;
-
-                        // Auto-attach if very close
-                        if (distance < 30 && !attachedParticles.has(this)) {
-                            this.attached = true;
-                            this.offsetX = this.x - mouse.x;
-                            this.offsetY = this.y - mouse.y;
-                            attachedParticles.add(this);
-                        }
-                    }
-                }
-            } else {
-                // Follow mouse with offset
-                this.x = mouse.x + this.offsetX;
-                this.y = mouse.y + this.offsetY;
-            }
-        }
-
-        draw() {
-            ctx.shadowBlur = 0;
+          if (distance < maxDistance) {
             ctx.beginPath();
-            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-            ctx.fillStyle = this.color;
-            ctx.fill();
+            ctx.moveTo(particle.x, particle.y);
+            ctx.lineTo(other.x, other.y);
+
+            ctx.strokeStyle =
+              `rgba(243, 168, 200, ${(1 - distance / maxDistance) * 0.075})`;
+
+            ctx.lineWidth = 0.6;
+            ctx.stroke();
+          }
         }
+      }
+
+      animationFrame = window.requestAnimationFrame(animate);
     }
 
-    // Initialize particles
-    const particleCount = 80;
-    for (let i = 0; i < particleCount; i++) {
-        particles.push(new Particle());
+    function startAnimation() {
+      window.cancelAnimationFrame(animationFrame);
+      animate();
     }
 
-    // Mouse move handler
-    const handleMouseMove = (e) => {
-        mouse.x = e.clientX;
-        mouse.y = e.clientY;
-    };
+    resizeCanvas();
+    startAnimation();
 
-    // Click handler to detach
-    const handleClick = (e) => {
-        const clickX = e.clientX;
-        const clickY = e.clientY;
+    window.addEventListener("resize", () => {
+      window.clearTimeout(resizeTimeout);
 
-        particles.forEach(particle => {
-            if (particle.attached) {
-                const dx = clickX - particle.x;
-                const dy = clickY - particle.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
+      resizeTimeout = window.setTimeout(() => {
+        resizeCanvas();
+      }, 120);
+    }, { passive: true });
 
-                if (distance < 50) {
-                    particle.attached = false;
-                    attachedParticles.delete(particle);
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        window.cancelAnimationFrame(animationFrame);
+      } else {
+        startAnimation();
+      }
+    });
+  })();
 
-                    // Give it a little push away
-                    const angle = Math.atan2(dy, dx);
-                    particle.vx = -Math.cos(angle) * 2;
-                    particle.vy = -Math.sin(angle) * 2;
-                }
-            }
-        });
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('click', handleClick);
-
-    // Animation loop
-    const animate = () => {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // Background
-        ctx.fillStyle = '#000000';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        // Draw connections
-        particles.forEach((p1, i) => {
-            particles.slice(i + 1).forEach(p2 => {
-                const dx = p1.x - p2.x;
-                const dy = p1.y - p2.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-
-                if (distance < 100) {
-                    ctx.beginPath();
-                    ctx.strokeStyle = `rgba(255, 255, 255, ${(1 - distance / 100) * 0.1})`;
-                    ctx.lineWidth = 0.5;
-                    ctx.moveTo(p1.x, p1.y);
-                    ctx.lineTo(p2.x, p2.y);
-                    ctx.stroke();
-                }
-            });
-        });
-
-        // Update and draw particles
-        particles.forEach(particle => {
-            particle.update();
-            particle.draw();
-        });
-
-        animationFrameId = requestAnimationFrame(animate);
-    };
-
-    animate();
-})();
+  console.log("Zaiba Muskan's portfolio initialized.");
+});

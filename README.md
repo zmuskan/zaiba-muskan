@@ -1,6 +1,6 @@
 # Zaiba Muskan | Software, Data & Applied AI
 
-Bengaluru, India · [Email](mailto:zaibamuskandm@gmail.com) · [LinkedIn](https://www.linkedin.com/in/zaiba-muskan-dm-983055388/) · [GitHub](https://github.com/zmuskan) · [Portfolio](#)
+Bengaluru, India · [Email](mailto:zaibamuskandm@gmail.com) · [LinkedIn](https://www.linkedin.com/in/zaiba-muskan-dm-983055388/) · [GitHub](https://github.com/zmuskan) · [Portfolio](https://sage-axolotl-20ebd5.netlify.app)
 
 ## About Me
 
